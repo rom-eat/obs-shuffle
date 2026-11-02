@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Shuffle Playlist</title>
+<style>
+  html, body { margin: 0; height: 100%; background: transparent; overflow: hidden; }
+  #player { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+<div id="player"></div>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+  // Playlist ID is hardcoded; add ?list=OTHER_ID to the URL to override it.
+  const DEFAULT_LIST = 'PLWglO2fD1qiILzUMZqnOInwgdN02XOKXh';
+  const LIST = new URLSearchParams(location.search).get('list') || DEFAULT_LIST;
+
+  let player, shuffled = false;
+
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('player', {
+      width: '100%',
+      height: '100%',
+      playerVars: {
+        listType: 'playlist',
+        list: LIST,
+        autoplay: 1,
+        controls: 0,
+        rel: 0
+      },
+      events: { onStateChange: onState }
+    });
+  }
+
+  function onState() {
+    if (shuffled) return;
+    const ids = player.getPlaylist();
+    if (!ids || !ids.length) return;
+    shuffled = true;
+    player.setShuffle(true);
+    player.setLoop(true);
+    player.playVideoAt(Math.floor(Math.random() * ids.length));
+  }
+</script>
+</body>
+</html>
