@@ -29,11 +29,17 @@
         controls: 0,
         rel: 0
       },
-      events: { onStateChange: onState }
+      events: { onReady: onReady, onStateChange: onState }
     });
   }
 
-  function onState() {
+  function onReady(e) {
+    e.target.playVideo();
+  }
+
+  function onState(e) {
+    // If the player stalls on "unstarted" or "cued", nudge it to play
+    if (e.data === -1 || e.data === 5) player.playVideo();
     if (shuffled) return;
     const ids = player.getPlaylist();
     if (!ids || !ids.length) return;
