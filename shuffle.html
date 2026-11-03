@@ -27,19 +27,27 @@
         list: LIST,
         autoplay: 1,
         controls: 0,
-        rel: 0
+        rel: 0,
+        cc_load_policy: 0
       },
       events: { onReady: onReady, onStateChange: onState }
     });
   }
 
+  function killCaptions() {
+    try { player.unloadModule('captions'); } catch (err) {}
+    try { player.unloadModule('cc'); } catch (err) {}
+  }
+
   function onReady(e) {
+    killCaptions();
     e.target.playVideo();
   }
 
   function onState(e) {
     // If the player stalls on "unstarted" or "cued", nudge it to play
     if (e.data === -1 || e.data === 5) player.playVideo();
+    if (e.data === 1) killCaptions();
     if (shuffled) return;
     const ids = player.getPlaylist();
     if (!ids || !ids.length) return;
